@@ -36,32 +36,27 @@
 //http satus code - tem que informar  como o codigo esta assim q startado se deu erro se rodou qual o erro  seguindo o  as nomras
 
 import http from "node:http";
-const users = [];
+import { json } from "./middlewares/json.js";
+import { Database } from "./database.js";
+
+const database = new Database();
 const server = http.createServer(async (request, response) => {
   const { method, url } = request;
-  const buffers = [];
-
-  for await (const chunk of request) {
-    buffers.push(chunk);
-  }
-  try {
-    request.body = JSON.parse(Buffer.concat(buffers).toString());
-  } catch {
-    request.body = null;
-  }
-
+  await json(request, response);
   if (method === "GET" && url === "/users") {
-    return response
-      .setHeader("Content-type", "aplication/json")
-      .end(JSON.stringify(users));
+    const users = database.select("users");
+
+    return response.end(JSON.stringify(users));
   }
   if (method === "POST" && url === "/users") {
     const { name, email } = request.body;
-    users.push({
+    const user = {
       id: 1,
-      nome,
+      name,
       email,
-    });
+    };
+
+    database.insert("users", user);
     return response.writeHead(201).end();
   }
 
