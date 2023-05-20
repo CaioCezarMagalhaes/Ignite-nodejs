@@ -35,6 +35,13 @@
 
 //http satus code - tem que informar  como o codigo esta assim q startado se deu erro se rodou qual o erro  seguindo o  as nomras
 
+//tres formas do front-end enviar informaçoes
+//Query Parametres: parametros nomeados que a gente envia no proprio endereço da requisiçao ex: localhost:3333/users?userId=1 ( usado quando é preciso de uma url Stateful)--> usados para filtros , paginar ,buscas porem nao ficam salvas
+//Route Parametres:  sao parametros nao nomeados que tmbem ficam na rota ex: localhost:3333/users/1 --> (1) route parametrer serve para identificar um recurso geralmente
+//Request Body: Envio de informações  de um formulario geralmente (passando pelo protocolo https)-> e sao mais seguros e nao ficam na url ex: POST localhost:3333/users
+
+// rotas para ediçao e remoçao do usuaria
+
 import http from "node:http";
 import { json } from "./middlewares/json.js";
 import { routes } from "./routes.js";
@@ -44,10 +51,11 @@ const server = http.createServer(async (request, response) => {
   await json(request, response);
 
   const route = routes.find((route) => {
-    return route.method === method && route.path === url;
+    return route.method === method && route.path.test(url);
   });
   if (route) {
     return route.handler(request, response);
+    const routeParams = request.url.matchAll(route.path);
   }
 
   return response.writeHead(404).end();
