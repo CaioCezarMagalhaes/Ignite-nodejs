@@ -28,10 +28,22 @@ export const routes = [
     },
   },
   {
+    method: "PUT",
+    path: biuldRoutePath("/users/:id"),
+    handler: (request, response) => {
+      const { id } = request.params;
+      const { name, email } = request.body;
+      database.update("users", id, { name, email });
+      return response.writeHead(204).end();
+    },
+  },
+  {
     method: "DELETE",
     path: biuldRoutePath("/users/:id"),
     handler: (request, response) => {
-      return response.end();
+      const { id } = request.params;
+      database.delete("users", id);
+      return response.writeHead(204).end();
     },
   },
 ];
