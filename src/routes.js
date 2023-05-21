@@ -8,7 +8,11 @@ export const routes = [
     method: "GET",
     path: biuldRoutePath("/users"),
     handler: (request, response) => {
-      const users = database.select("users");
+      const { search } = request.query;
+      const users = database.select(
+        "users",
+        search ? { name: search, email: search } : null
+      );
       return response.end(JSON.stringify(users));
     },
   },
